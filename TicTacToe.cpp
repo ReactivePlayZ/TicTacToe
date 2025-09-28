@@ -134,16 +134,12 @@ int main() {
         }
         
         if (winConditionForPlayer(grid, p1)) { break; }
-        if (tieChecker(grid)) { break;}
+        if (tieChecker(grid)) { break; }
         turns--;
     };
-    if (winConditionForPlayer(grid, p1)) {
-        cout << p1 << " Won!" << endl;
-    } else if (winConditionForPlayer(grid, p2)) {
-        cout << p2 << " Won!" << endl;
-    } else {
-        cout << "It's a tie!" << endl;
-    }
+    if (winConditionForPlayer(grid, p1)) { cout << p1 << " Won!" << endl; }
+    else if (winConditionForPlayer(grid, p2)) { cout << p2 << " Won!" << endl; } 
+    else { cout << "It's a tie!" << endl; }
     showGrid(grid);
     return 0;
 }
