@@ -7,6 +7,8 @@
  *
  */
 #include <iostream>
+#include <cstdlib> // Needed for random values
+#include <ctime> // To actually make them random each time
 using namespace std;
 
 void showGrid(char grid[3][3]) {
@@ -45,9 +47,68 @@ bool tieChecker(char grid[3][3]) {
     return true;
 }
 
+/*
+ *
+ * Additional Tasks:
+ * (If needed) ignore limiting yourself to just the standard library.
+ * Create a bot player to play against the user.
+ * 
+ */
+
+int emptyWinPos(char grid[3][3], char p) {
+    // Returns the next move to win (rather the move that should be blocked by opponent of p)
+    // Otherwise returns 0
+    int count; int countY;
+    int emptyPos; int emptyPosY;
+    for (int i=0; i<3; i++) {
+        count = 0;
+        countY = 0;
+        for (int j=0; j<3; j++) {
+            if (grid[i][j]==p) { count++; }
+            else if (grid[i][j]==' ') { emptyPos=j; }
+            else { count = 0; }
+
+            if (grid[j][i]==p) { countY++; }
+            else if (grid[j][i]==' ') { emptyPosY=j; }
+            else { countY = 0; } 
+
+            if (j==2 && countY>1) {
+                return (i + 1) + (emptyPosY * 3);
+            }
+        }
+        if (count>1) {
+            return (emptyPos + 1) + (i * 3);
+        }
+    }
+    return 0;
+}
+
+int nextBestMove(char grid[3][3], char player, char opp, int turns) {
+    int win = emptyWinPos(grid, player);
+    if (win!=0) { return win; }
+ 
+    int block = emptyWinPos(grid, opp);
+    if (block!=0) { return block; }
+ 
+    if (turns==8 && grid[1][1]!=opp) { return 5; }
+    else if (turns==8 && grid[1][1]==opp) { return 1; }
+    else if (turns==9) { return 5; }
+
+    srand(time(0));
+    int pos;
+    int row;
+    int col;
+    do {
+        pos = (rand() % 9)+1;
+        row = (pos - 1) / 3;
+        col = (pos - 1) % 3;
+    } while(grid[row][col]!=' ');
+    return pos;
+}
+
 int main() {
-    char p1 = 'X'; // Players 1 and 2 abbreviated to p1 and p2
-    char p2 = 'O';
+    const char p1 = 'X'; // Players 1 and 2 abbreviated to p1 and p2
+    const char p2 = 'O';
     char grid[3][3] = {
         {' ',' ',' '},
         {' ',' ',' '},
@@ -55,9 +116,18 @@ int main() {
     };
     cout << "[1][2][3]\n[4][5][6]\n[7][8][9]" << endl;
     cout << "These are the positions, pick a position to play." << endl;
+    char choice;
+    cout << "Enable bot opponent? (y/n - defaults to n): ";
+    cin >> choice;
+    if (choice!='y') {
+        choice = 'n';
+    }
+    const bool bot = (choice=='y') ? true : false;
     int turns = 9;
     int pos = 0;
     char currentPlayer = p2;
+    int row;
+    int col;
     bool incorrect = false;
     cout << "Current player: " << currentPlayer << endl;
     while (turns>0) {
@@ -70,70 +140,20 @@ int main() {
         if (turns==0) { break; }
         currentPlayer = swapPlayers(currentPlayer, p1, p2);
         showGrid(grid);
-        cout << currentPlayer << " | Turns left: " << turns << " | input: ";
-        cin >> pos; cout << endl;
-        switch(pos) {
-            // Way too cluttered at the moment, maybe needs some optimization and rewording
-            case 1:
-                if(grid[0][0]==' ') {
-                    grid[0][0] = currentPlayer;
-                } else {
-                    incorrect = true;
-                } break;
-            case 2:
-                if(grid[0][1]==' ') {
-                    grid[0][1] = currentPlayer;
-                } else {
-                    incorrect = true;
-                } break;
-            case 3:
-                if(grid[0][2]==' ') {
-                    grid[0][2] = currentPlayer;
-                } else {
-                    incorrect = true;
-                } break;
-            case 4:
-                if(grid[1][0]==' ') {
-                    grid[1][0] = currentPlayer;
-                } else {
-                    incorrect = true;
-                } break;
-            case 5:
-                if(grid[1][1]==' ') {
-                    grid[1][1] = currentPlayer;
-                } else {
-                    incorrect = true;
-                } break;
-            case 6:
-                if(grid[1][2]==' ') {
-                    grid[1][2] = currentPlayer;
-                } else {
-                    incorrect = true;
-                } break;
-            case 7:
-                if(grid[2][0]==' ') {
-                    grid[2][0] = currentPlayer;
-                } else {
-                    incorrect = true;
-                } break;
-            case 8:
-                if(grid[2][1]==' ') {
-                    grid[2][1] = currentPlayer;
-                } else {
-                    incorrect = true;
-                } break;
-            case 9:
-                if(grid[2][2]==' ') {
-                    grid[2][2] = currentPlayer;
-                } else {
-                    incorrect = true;
-                } break;
-            default:
-                cout << "Please pick one of the free squares within 1-9." << endl;
-                incorrect = true;
+        cout << currentPlayer << "'s Turn | Squares left: " << turns << " | input: ";
+        if (bot && currentPlayer==p2) {
+            pos = nextBestMove(grid, p2, p1, turns);
+            cout << pos << endl;
+        } else { cin >> pos; cout << endl; }
+        row = (pos - 1) / 3;
+        col = (pos - 1) % 3;
+        if (grid[row][col]==' ') { grid[row][col] = currentPlayer; }
+        else {
+            cout << "Please pick one of the free squares within 1-9." << endl;
+            incorrect = true;
         }
         
-        if (winConditionForPlayer(grid, p1)) { break; }
+        if (winConditionForPlayer(grid, currentPlayer)) { break; }
         if (tieChecker(grid)) { break; }
         turns--;
     };
@@ -143,11 +163,3 @@ int main() {
     showGrid(grid);
     return 0;
 }
-
-/*
- *
- * Additional Tasks:
- * (If needed) ignore limiting yourself to just the standard library.
- * Create a bot player to play against the user.
- * 
- */
