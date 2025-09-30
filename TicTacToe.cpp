@@ -142,10 +142,13 @@ void play() {
         currentPlayer = swapPlayers(currentPlayer, p1, p2);
         showGrid(grid);
         cout << currentPlayer << "'s Turn | Squares left: " << turns << " | input: ";
+
         if (bot && currentPlayer==p2) {
             pos = nextBestMove(grid, p2, p1, turns);
             cout << pos << endl;
         } else { cin >> pos; cout << endl; }
+        
+        // convert pos to array pos
         row = (pos - 1) / 3;
         col = (pos - 1) % 3;
         if (grid[row][col]==' ') { grid[row][col] = currentPlayer; }
