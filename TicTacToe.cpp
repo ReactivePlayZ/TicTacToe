@@ -9,7 +9,7 @@
 #include <iostream>
 #include <cstdlib> // Needed for random values
 #include <ctime> // To actually make them random each time
-using namespace std;
+using std::cout; using std::cin; using std::endl;
 
 void showGrid(char grid[3][3]) {
     for (int i=0; i<3; i++) {
@@ -27,8 +27,11 @@ char swapPlayers(char currentPlayer, char p1, char p2) {
 }
 
 bool winConditionForPlayer(char grid[3][3], char p1) {
-    /* p1 is current player and checks if the winning conditions
-       of 3 in a row horizontally, vertically, or diagonally is met. */
+    /*
+     * p1 is current player and checks if the winning conditions
+     * of 3 in a row horizontally, vertically, or diagonally is met.
+     * Will update later to be a loop instead.
+     */
     if(grid[0][0] == p1 && grid[0][1] == p1 && grid[0][2] == p1) { return true; }
     if(grid[1][0] == p1 && grid[1][1] == p1 && grid[1][2] == p1) { return true; }
     if(grid[2][0] == p1 && grid[2][1] == p1 && grid[2][2] == p1) { return true; }
@@ -52,6 +55,9 @@ bool tieChecker(char grid[3][3]) {
  * Additional Tasks:
  * (If needed) ignore limiting yourself to just the standard library.
  * Create a bot player to play against the user.
+ * 
+ * Optional Task:
+ * Make the grid scalable (3x3 -> 4x4, 5x5, 6x6, etc)
  * 
  */
 
@@ -95,7 +101,6 @@ int nextBestMove(char grid[3][3], char player, char opp, int turns) {
     else if (turns==8 && grid[1][1]==opp) { return 1; }
     else if (turns==9) { return 5; }
 
-    srand(time(0));
     int pos;
     int row;
     int col;
@@ -130,23 +135,30 @@ void play() {
     int row;
     int col;
     bool incorrect = false;
-    cout << "Current player: " << currentPlayer << endl;
     while (turns>0) {
         if (incorrect==true) {
             turns++;
             currentPlayer = swapPlayers(currentPlayer, p1, p2);
-            if (!pos<1 || !pos>9) { cout << "Invalid choice, go again" << endl; }
+            if (pos<1 || pos>9) { cout << "Invalid choice, go again" << endl; }
             incorrect = false;
         }
         if (turns==0) { break; }
         currentPlayer = swapPlayers(currentPlayer, p1, p2);
+        cout << endl;
         showGrid(grid);
-        cout << currentPlayer << "'s Turn | Squares left: " << turns << " | input: ";
+        cout << "Current Player: " << currentPlayer << endl;
+        cout << currentPlayer << " | Squares left: " << turns << " | input: ";
 
         if (bot && currentPlayer==p2) {
             pos = nextBestMove(grid, p2, p1, turns);
             cout << pos << endl;
-        } else { cin >> pos; cout << endl; }
+        } else {
+            while (!(cin >> pos)) {
+                cout << "Please enter a valid move (1-9): ";
+                cin.clear();
+                cin.ignore(10000, '\n');
+            }
+        }
         
         // convert pos to array pos
         row = (pos - 1) / 3;
@@ -168,6 +180,7 @@ void play() {
 }
 
 int main() {
+    srand(time(0));
     cout << "Welcome to Tic Tac Toe!" << endl;
     char again = 'n';
     do {
