@@ -107,7 +107,7 @@ int nextBestMove(char grid[3][3], char player, char opp, int turns) {
     return pos;
 }
 
-int main() {
+void play() {
     const char p1 = 'X'; // Players 1 and 2 abbreviated to p1 and p2
     const char p2 = 'O';
     char grid[3][3] = {
@@ -118,10 +118,10 @@ int main() {
     cout << "[1][2][3]\n[4][5][6]\n[7][8][9]" << endl;
     cout << "These are the positions, pick a position to play." << endl;
     char choice;
-    cout << "Enable bot opponent? (y/n - defaults to n): ";
+    cout << "Enable bot opponent? (y/n - defaults to y): ";
     cin >> choice;
-    if (choice!='y') {
-        choice = 'n';
+    if (choice!='n') {
+        choice = 'y';
     }
     const bool bot = (choice=='y') ? true : false;
     int turns = 9;
@@ -162,5 +162,18 @@ int main() {
     else if (winConditionForPlayer(grid, p2)) { cout << p2 << " Won!" << endl; } 
     else { cout << "It's a tie!" << endl; }
     showGrid(grid);
+}
+
+int main() {
+    cout << "Welcome to Tic Tac Toe!" << endl;
+    char again = 'n';
+    do {
+        play();
+        cout << "Play again? (y/n - defaults to n): ";
+        cin >> again; cout << endl;
+        if (again!='y') { again = 'n'; }
+    }
+    while (again=='y');
+
     return 0;
 }
