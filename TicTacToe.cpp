@@ -74,7 +74,7 @@ int emptyWinPos(char grid[3][3], char p) {
     // Otherwise returns 0
     // Doesn't check diagonals for now
     int count; int countY; int countZ = 0; int countW = 0;
-    int emptyPos = -1; int emptyPosY = -1; int emptyPosZ = -1;
+    int emptyPos = -1; int emptyPosY = -1; int emptyPosZ = -1; int emptyPosW = -1;
     for (int i=0; i<3; i++) {
         count = 0;
         countY = 0;
@@ -84,13 +84,12 @@ int emptyWinPos(char grid[3][3], char p) {
         else if (grid[i][i]==' ') { emptyPosZ = i; }
         else { countZ = 0; }
         if (countZ>1 && emptyPosZ!=-1) { return (emptyPosZ+1) + (emptyPosZ*3); }
-        else { countZ = 0; emptyPosZ = -1; }
         
         // Diag TopRight-To-BottomLeft
         if(grid[i][2-i]==p) { countW++; }
-        else if(grid[i][2-i]==' ') { emptyPosZ = i; }
+        else if(grid[i][2-i]==' ') { emptyPosW = i; }
         else { countW = 0; }
-        if (countW>1 && emptyPosZ!=-1) { return (emptyPosZ*2) + 3; }
+        if (countW>1 && emptyPosW!=-1) { return (emptyPosW*2) + 3; }
         
         // Rows and Columns
         for (int j=0; j<3; j++) {
