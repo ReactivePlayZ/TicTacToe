@@ -32,6 +32,14 @@ bool winConditionForPlayer(char grid[3][3], char p1) {
      * of 3 in a row horizontally, vertically, or diagonally is met.
      * Will update later to be a loop instead.
      */
+    int winCounter;
+    for(int i=0; i<3; i++) {
+        winCounter = 0;
+        for(int j=0; j<3; j++) {
+            if(grid[j][i] == p1) { winCounter++; }
+        }
+        if(winCounter>2) { return true; }
+    }
     if(grid[0][0] == p1 && grid[0][1] == p1 && grid[0][2] == p1) { return true; }
     if(grid[1][0] == p1 && grid[1][1] == p1 && grid[1][2] == p1) { return true; }
     if(grid[2][0] == p1 && grid[2][1] == p1 && grid[2][2] == p1) { return true; }
