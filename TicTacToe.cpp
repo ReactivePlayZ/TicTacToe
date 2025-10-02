@@ -73,25 +73,42 @@ int emptyWinPos(char grid[3][3], char p) {
     // Returns the next move to win (rather the move that should be blocked by opponent of p)
     // Otherwise returns 0
     // Doesn't check diagonals for now
-    int count; int countY;
-    int emptyPos; int emptyPosY;
+    int count; int countY; int countZ = 0; int countW = 0;
+    int emptyPos = -1; int emptyPosY = -1; int emptyPosZ = -1;
     for (int i=0; i<3; i++) {
         count = 0;
         countY = 0;
+        
+        // Diag TopLeft-To-BottomRight
+        if(grid[i][i]==p) { countZ++; }
+        else if (grid[i][i]==' ') { emptyPosZ = i; }
+        else { countZ = 0; }
+        if (countZ>1 && emptyPosZ!=-1) { return (emptyPosZ+1) + (emptyPosZ*3); }
+        else { countZ = 0; emptyPosZ = -1; }
+        
+        // Diag TopRight-To-BottomLeft
+        if(grid[i][2-i]==p) { countW++; }
+        else if(grid[i][2-i]==' ') { emptyPosZ = i; }
+        else { countW = 0; }
+        if (countW>1 && emptyPosZ!=-1) { return (emptyPosZ*2) + 3; }
+        
+        // Rows and Columns
         for (int j=0; j<3; j++) {
-            if (grid[i][j]==p) { count++; }
-            else if (grid[i][j]==' ') { emptyPos=j; }
-            else { count = 0; }
+            // Row
+            if (grid[i][j]==p) { count++; } // If it's our player, then add to the counter
+            else if (grid[i][j]==' ') { emptyPos=j; } // If it's empty, then that is the empty square
+            else { count = 0; } // If it's neither, then there's not a winnable square in this row
 
+            // Column
             if (grid[j][i]==p) { countY++; }
             else if (grid[j][i]==' ') { emptyPosY=j; }
             else { countY = 0; } 
 
-            if (j==2 && countY>1) {
+            if (j==2 && countY>1 && emptyPosY!=-1) {
                 return (i + 1) + (emptyPosY * 3);
             }
         }
-        if (count>1) {
+        if (count>1 && emptyPos!=-1) {
             return (emptyPos + 1) + (i * 3);
         }
     }
@@ -100,13 +117,14 @@ int emptyWinPos(char grid[3][3], char p) {
 
 int nextBestMove(char grid[3][3], char player, char opp, int turns) {
     int win = emptyWinPos(grid, player);
-    if (win!=0) { return win; }
- 
+    if (win!=0 && grid[ (win-1)/3 ][ (win-1)%3 ] == ' ') { return win; }
+    // Checking to see if it's a winnable spot and if that spot is empty.
+
     int block = emptyWinPos(grid, opp);
-    if (block!=0) { return block; }
+    if (block!=0 && grid[ (block-1)/3 ][ (block-1)%3 ] == ' ') { return block; }
  
     if (turns==8 && grid[1][1]!=opp) { return 5; }
-    else if (turns==8 && grid[1][1]==opp) { return 1; }
+    //else if (turns==8 && grid[1][1]==opp) { return 1; }
     else if (turns==9) { return 5; }
 
     int pos;
@@ -137,6 +155,14 @@ void play() {
         choice = 'y';
     }
     const bool bot = (choice=='y') ? true : false;
+    
+    cout << "Both players are bots? (y/n - defaults to n): ";
+    cin >> choice;
+    if (choice!='y') {
+        choice = 'n';
+    }
+    const bool bothPlayerBots = (choice=='n') ? false : true;
+
     int turns = 9;
     int pos = 0;
     char currentPlayer = p2;
@@ -156,11 +182,14 @@ void play() {
         showGrid(grid);
         cout << "Current Player: " << currentPlayer << endl;
         cout << currentPlayer << " | Squares left: " << turns << " | input: ";
-
+        if (bothPlayerBots && currentPlayer==p1) {
+            pos = nextBestMove(grid, p1, p2, turns);
+            cout << pos << endl;
+        }
         if (bot && currentPlayer==p2) {
             pos = nextBestMove(grid, p2, p1, turns);
             cout << pos << endl;
-        } else {
+        } else if (!bothPlayerBots) {
             while (!(cin >> pos)) {
                 cout << "Please enter a valid move (1-9): ";
                 cin.clear();
