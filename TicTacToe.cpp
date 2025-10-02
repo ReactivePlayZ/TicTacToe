@@ -72,7 +72,6 @@ bool tieChecker(char grid[3][3]) {
 int emptyWinPos(char grid[3][3], char p) {
     // Returns the next move to win (rather the move that should be blocked by opponent of p)
     // Otherwise returns 0
-    // Doesn't check diagonals for now
     int count; int countY; int countZ = 0; int countW = 0;
     int emptyPos = -1; int emptyPosY = -1; int emptyPosZ = -1; int emptyPosW = -1;
     for (int i=0; i<3; i++) {
