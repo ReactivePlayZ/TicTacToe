@@ -9,7 +9,8 @@
 #include <iostream>
 #include <cstdlib> // Needed for random values
 #include <ctime> // To actually make them random each time
-using std::cout; using std::cin; using std::endl;
+#include <cctype>
+using std::cout; using std::cin; using std::endl; using std::tolower;
 
 void showGrid(char grid[3][3]) {
     for (int i=0; i<3; i++) {
@@ -149,12 +150,14 @@ char play() {
     char choice;
     cout << "Enable bot opponent? (y/n - defaults to y): ";
     cin >> choice;
+    choice = tolower(choice);
     if (choice!='n') { choice = 'y'; }
     const bool bot = (choice=='y') ? true : false;
     choice='n';
     if (bot) {
         cout << "Both players are bots? (y/n - defaults to n): ";
         cin >> choice;
+        choice = tolower(choice);
         if (choice!='y') { choice = 'n'; }
     }
     const bool bothPlayerBots = (choice=='n') ? false : true;
@@ -234,6 +237,7 @@ int main() {
         cout << "Games played: " << X+O+T << endl;
         cout << "Play again? (y/n - defaults to n): ";
         cin >> again; cout << endl;
+        again = tolower(again);
         if (again!='y') { again = 'n'; }
     }
     while (again=='y');
