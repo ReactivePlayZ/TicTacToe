@@ -136,7 +136,7 @@ int nextBestMove(char grid[3][3], char player, char opp, int turns) {
     return pos;
 }
 
-void play() {
+char play() {
     const char p1 = 'X'; // Players 1 and 2 abbreviated to p1 and p2
     const char p2 = 'O';
     char grid[3][3] = {
@@ -208,18 +208,32 @@ void play() {
         if (tieChecker(grid)) { break; }
         turns--;
     };
-    if (winConditionForPlayer(grid, p1)) { cout << p1 << " Won!" << endl; }
-    else if (winConditionForPlayer(grid, p2)) { cout << p2 << " Won!" << endl; } 
-    else { cout << "It's a tie!" << endl; }
-    showGrid(grid);
+    if (winConditionForPlayer(grid, p1)) {
+        cout << p1 << " Won!" << endl; showGrid(grid);
+        return p1;
+    }
+    else if (winConditionForPlayer(grid, p2)) {
+        cout << p2 << " Won!" << endl; showGrid(grid);
+        return p2;
+    }
+    cout << "It's a tie!" << endl; showGrid(grid);
+    return 'T';
 }
 
 int main() {
     srand(time(0));
     cout << "Welcome to Tic Tac Toe!" << endl;
     char again = 'n';
+    int X = 0; int O = 0; int T = 0;
+    char winner;
     do {
-        play();
+        winner = play();
+        if (winner=='X') { X++; }
+        else if (winner=='O') { O++; }
+        else if (winner=='T') { T++; }
+        cout << "The scores are:" << endl;
+        cout << "X: " << X << " | O: " << O << " TIE: " << T << endl;
+        cout << "Games played: " << X+O+T << endl;
         cout << "Play again? (y/n - defaults to n): ";
         cin >> again; cout << endl;
         if (again!='y') { again = 'n'; }
