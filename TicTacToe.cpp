@@ -149,15 +149,13 @@ char play() {
     char choice;
     cout << "Enable bot opponent? (y/n - defaults to y): ";
     cin >> choice;
-    if (choice!='n') {
-        choice = 'y';
-    }
+    if (choice!='n') { choice = 'y'; }
     const bool bot = (choice=='y') ? true : false;
-    
-    cout << "Both players are bots? (y/n - defaults to n): ";
-    cin >> choice;
-    if (choice!='y') {
-        choice = 'n';
+    choice='n';
+    if (bot) {
+        cout << "Both players are bots? (y/n - defaults to n): ";
+        cin >> choice;
+        if (choice!='y') { choice = 'n'; }
     }
     const bool bothPlayerBots = (choice=='n') ? false : true;
 
